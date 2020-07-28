@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
 	<title>Leaflet Provider Demo</title>
 	<meta charset="utf-8" />
@@ -8,9 +9,19 @@
 	<!-- Leaflet style. REQUIRED! -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
 	<style>
-		html { height: 100% }
-		body { height: 100%; margin: 0; padding: 0;}
-		.map { height: 100% }
+		html {
+			height: 100%
+		}
+
+		body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.map {
+			height: 100%
+		}
 	</style>
 	<!--Fork Me on Github ribbon, we're using the awsome version from simonwhitaker available at https://github.com/simonwhitaker/github-fork-ribbon-css  -->
 	<link rel="stylesheet" href="css/gh-fork-ribbon.css" />
@@ -18,6 +29,7 @@
 		<link rel="stylesheet" href="css/gh-fork-ribbon.ie.css" />
 	<![endif]-->
 </head>
+
 <body>
 	<div class="github-fork-ribbon-wrapper left">
 		<div class="github-fork-ribbon">
@@ -35,7 +47,7 @@
 			zoomControl: false
 		});
 
-		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
 
 		var baseLayers = {
 			'OpenStreetMap Default': defaultLayer,
@@ -65,6 +77,24 @@
 			'Geoportail France classic maps': L.tileLayer.provider('GeoportailFrance.ignMaps')
 		};
 
+		if (location.hash.length > 1) {
+			var rawHash = location.hash.replace(/^#/, '');
+			if (baseLayers.hasOwnProperty(rawHash)) baseLayers[rawHash].addTo(map);
+			else if (/^https?:\/\//.test(rawHash)) {
+				L.TileLayer.Provider.providers.Custom = {
+					url: rawHash,
+					options: {
+						attribution: 'Please respect the map provider’s copyright'
+					},
+				};
+				baseLayers.Custom = L.tileLayer.provider('Custom');
+				baseLayers.Custom.addTo(map);
+			}
+			else defaultLayer.addTo(map);
+		} else {
+			defaultLayer.addTo(map);
+		}
+
 		var overlayLayers = {
 			'OpenSeaMap': L.tileLayer.provider('OpenSeaMap'),
 			'OpenWeatherMap Clouds': L.tileLayer.provider('OpenWeatherMap.Clouds'),
@@ -81,10 +111,10 @@
 			'Geoportail France Parcels': L.tileLayer.provider('GeoportailFrance.parcels')
 		};
 
-		L.control.layers(baseLayers, overlayLayers, {collapsed: false}).addTo(map);
+		L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
 
 		// resize layers control to fit into view.
-		function resizeLayerControl () {
+		function resizeLayerControl() {
 			var layerControlHeight = document.body.clientHeight - (10 + 50);
 			var layerControl = document.getElementsByClassName('leaflet-control-layers-expanded')[0];
 
@@ -95,4 +125,5 @@
 		resizeLayerControl();
 	</script>
 </body>
+
 </html>
