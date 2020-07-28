@@ -107,7 +107,7 @@
 			map.setView({ lat, lng }, zoom);
 		}
 
-		L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
+		L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 
 		// resize layers control to fit into view.
 		function resizeLayerControl() {
