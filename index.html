@@ -22,6 +22,10 @@
 		.map {
 			height: 100%
 		}
+
+		.leaflet-control-layers-expanded {
+			max-height: calc(100vh - 10px - 50px);
+		}
 	</style>
 </head>
 
@@ -109,23 +113,12 @@
 
 		L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 
-		// resize layers control to fit into view.
-		function resizeLayerControl() {
-			var layerControlHeight = document.body.clientHeight - (10 + 50);
-			var layerControl = document.getElementsByClassName('leaflet-control-layers-expanded')[0];
-
-			layerControl.style.overflowY = 'auto';
-			layerControl.style.maxHeight = layerControlHeight + 'px';
-		}
-		map.on('resize', resizeLayerControl);
-
 		map.on('zoomend moveend', function () {
 			var { lat, lng } = map.getCenter();
 			var zoom = map.getZoom();
 			var posString = [zoom, lat, lng].join("/");
 			history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
 		});
-		resizeLayerControl();
 
 		window.addEventListener("hashchange", () => location.reload());
 	</script>
