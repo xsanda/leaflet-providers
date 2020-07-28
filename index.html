@@ -84,7 +84,7 @@
 		};
 
 		if (location.hash.length > 1) {
-			var rawHash = location.hash.replace(/^#/, '');
+			var rawHash = decodeURIComponent(location.hash.replace(/^#/, ''));
 			if (baseLayers.hasOwnProperty(rawHash)) baseLayers[rawHash].addTo(map);
 			else if (/^https?:\/\//.test(rawHash)) {
 				L.TileLayer.Provider.providers.Custom = {
