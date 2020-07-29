@@ -8,6 +8,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<!-- Leaflet style. REQUIRED! -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+	<link rel="manifest" id="manifest">
 	<style>
 		html {
 			height: 100%
@@ -121,6 +122,24 @@
 		});
 
 		window.addEventListener("hashchange", () => location.reload());
+
+		var myDynamicManifest = {
+			"name": "Leaflet Preview",
+			"short_name": "Leaflet",
+			"description": "Leaflet Preview for " + location.hash,
+			"start_url": "/" + location.hash,
+			"background_color": "#fff",
+			"theme_color": "#00f",
+			// "icons": [{
+			// 	"src": "whatever.png",
+			// 	"sizes": "256x256",
+			// 	"type": "image/png"
+			// }]
+		}
+		const stringManifest = JSON.stringify(myDynamicManifest);
+		const blob = new Blob([stringManifest], { type: 'application/json' });
+		const manifestURL = URL.createObjectURL(blob);
+		document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
 	</script>
 </body>
 
