@@ -90,8 +90,7 @@
 
 		if (location.hash.length > 1) {
 			var rawHash = decodeURIComponent(location.hash.replace(/^#/, ''));
-			if (baseLayers.hasOwnProperty(rawHash)) baseLayers[rawHash].addTo(map);
-			else if (/^https?:\/\//.test(rawHash)) {
+			if (/^https?:\/\//.test(rawHash)) {
 				L.TileLayer.Provider.providers.Custom = {
 					url: rawHash,
 					options: {
@@ -112,7 +111,9 @@
 			map.setView({ lat, lng }, zoom);
 		}
 
-		L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
+		if (baseLayers.Custom) {
+			L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
+		}
 
 		map.on('zoomend moveend', function () {
 			var { lat, lng } = map.getCenter();
@@ -127,7 +128,7 @@
 			"name": "Leaflet Preview",
 			"short_name": "Leaflet",
 			"description": "Leaflet Preview for " + location.hash,
-			"start_url": "/" + location.hash,
+			"start_url": location.origin + location.pathname + location.hash,
 			"background_color": "#fff",
 			"theme_color": "#00f",
 			"display": "fullscreen",
