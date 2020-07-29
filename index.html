@@ -140,7 +140,7 @@
 		const stringManifest = JSON.stringify(myDynamicManifest);
 		const blob = new Blob([stringManifest], { type: 'application/json' });
 		const manifestURL = URL.createObjectURL(blob);
-		document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
+		document.querySelector('#manifest').setAttribute('href', manifestURL);
 	</script>
 </body>
 
