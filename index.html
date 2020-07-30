@@ -40,7 +40,6 @@
 			center: [48, -3],
 			zoom: 5,
 			zoomControl: false,
-			zoomOffset: 1,
 		});
 
 		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
@@ -95,7 +94,8 @@
 				L.TileLayer.Provider.providers.Custom = {
 					url: rawHash,
 					options: {
-						attribution: 'Please respect the map provider’s copyright'
+						attribution: 'Please respect the map provider’s copyright',
+						detectRetina: true,
 					},
 				};
 				baseLayers.Custom = L.tileLayer.provider('Custom');
@@ -119,7 +119,7 @@
 		map.on('zoomend moveend', function () {
 			var { lat, lng } = map.getCenter();
 			var zoom = map.getZoom();
-			var posString = [zoom, lat, lng].join("/");
+			var posString = [zoom, lat.toFixed(4), lng.toFixed(4)].join("/");
 			history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
 		});
 
