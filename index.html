@@ -39,7 +39,8 @@
 		var map = L.map('map', {
 			center: [48, -3],
 			zoom: 5,
-			zoomControl: false
+			zoomControl: false,
+			detectRetina: true,
 		});
 
 		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
