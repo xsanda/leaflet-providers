@@ -8,6 +8,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<!-- Leaflet style. REQUIRED! -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72/dist/L.Control.Locate.min.css" />
 	<link rel="manifest" id="manifest">
 	<style>
 		html {
@@ -34,6 +36,7 @@
 	<div id="map" class="map"></div>
 
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72" charset="utf-8"></script>
 	<script src="leaflet-providers.js"></script>
 	<script>
 		var map = L.map('map', {
@@ -126,6 +129,8 @@
 		if (!baseLayers.Custom) {
 			L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 		}
+
+        L.control.locate().addTo(map);
 
 		var urlUpdateTimeout = 0;
         map.on('zoomend moveend', function () {
