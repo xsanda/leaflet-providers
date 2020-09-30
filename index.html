@@ -138,7 +138,7 @@
             urlUpdateTimeout = setTimeout(function () {
                 var { lat, lng } = map.getCenter();
                 var zoom = map.getZoom();
-                var posString = [zoom, lat.toFixed(4), lng.toFixed(4)].join("/");
+                var posString = [zoom.toFixed(2), lat.toFixed(4), lng.toFixed(4)].join("/");
                 history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
             }, 0);
 		});
