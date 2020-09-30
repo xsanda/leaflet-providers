@@ -41,6 +41,7 @@
 			zoom: 5,
 			zoomControl: false,
 			zoomSnap: 0,
+            wheelPxPerZoomLevel: 30,
 		});
 
 		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
@@ -92,9 +93,18 @@
 		if (location.hash.length > 1) {
 			var rawHash = decodeURIComponent(location.hash.replace(/^#/, ''));
 			if (/^https?:\/\//.test(rawHash)) {
-				L.TileLayer.Provider.providers.Custom = {
+                var subdomainSplit = /^(.*\{)([^\|\}]*?\|[^\}]*?)(\}.*)/.exec(rawHash);
+                var subdomains = ['a', 'b', 'c'];
+                if (subdomainSplit) {
+                    rawHash = subdomainSplit[1] + 's' + subdomainSplit[3];
+                    subdomains = subdomainSplit[2].split('|');
+                }
+
+                if (/\{([^\}]*|.*)\}/.test(rawHash))
+                L.TileLayer.Provider.providers.Custom = {
 					url: rawHash,
 					options: {
+                        subdomains,
 						attribution: 'Please respect the map provider’s copyright',
 						detectRetina: true,
 					},
@@ -117,11 +127,15 @@
 			L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 		}
 
-		map.on('zoomend moveend', function () {
-			var { lat, lng } = map.getCenter();
-			var zoom = map.getZoom();
-			var posString = [zoom, lat.toFixed(4), lng.toFixed(4)].join("/");
-			history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
+		var urlUpdateTimeout = 0;
+        map.on('zoomend moveend', function () {
+            clearTimeout(urlUpdateTimeout);
+            urlUpdateTimeout = setTimeout(function () {
+                var { lat, lng } = map.getCenter();
+                var zoom = map.getZoom();
+                var posString = [zoom, lat.toFixed(4), lng.toFixed(4)].join("/");
+                history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
+            }, 0);
 		});
 
 		window.addEventListener("hashchange", () => location.reload());
