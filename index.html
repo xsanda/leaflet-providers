@@ -8,8 +8,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<!-- Leaflet style. REQUIRED! -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72/dist/L.Control.Locate.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72/dist/L.Control.Locate.min.css" />
 	<link rel="manifest" id="manifest">
 	<style>
 		html {
@@ -36,20 +37,20 @@
 	<div id="map" class="map"></div>
 
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@%5E0.72" charset="utf-8"></script>
 	<script src="leaflet-providers.js"></script>
 	<script>
-		var map = L.map('map', {
+		const map = L.map('map', {
 			center: [48, -3],
 			zoom: 5,
 			zoomControl: false,
 			zoomSnap: 0,
-            wheelPxPerZoomLevel: 30,
+			wheelPxPerZoomLevel: 30,
 		});
 
-		var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
+		const defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik');
 
-		var baseLayers = {
+		const baseLayers = {
 			'OpenStreetMap Default': defaultLayer,
 			'OpenStreetMap German Style': L.tileLayer.provider('OpenStreetMap.DE'),
 			'OpenStreetMap H.O.T.': L.tileLayer.provider('OpenStreetMap.HOT'),
@@ -77,7 +78,7 @@
 			'Geoportail France classic maps': L.tileLayer.provider('GeoportailFrance.ignMaps')
 		};
 
-		var overlayLayers = {
+		const overlayLayers = {
 			'OpenSeaMap': L.tileLayer.provider('OpenSeaMap'),
 			'OpenWeatherMap Clouds': L.tileLayer.provider('OpenWeatherMap.Clouds'),
 			'OpenWeatherMap CloudsClassic': L.tileLayer.provider('OpenWeatherMap.CloudsClassic'),
@@ -93,30 +94,35 @@
 			'Geoportail France Parcels': L.tileLayer.provider('GeoportailFrance.parcels')
 		};
 
-		if (location.hash.length > 1) {
-			var rawHash = decodeURIComponent(location.hash.replace(/^#/, ''));
-			if (/^https?:\/\//.test(rawHash)) {
-                var subdomainSplit = /^(.*\{)([^\|\}]*?\|[^\}]*?)(\}.*)/.exec(rawHash);
-                var subdomains = ['a', 'b', 'c'];
-                if (subdomainSplit) {
-                    rawHash = subdomainSplit[1] + 's' + subdomainSplit[3];
-                    subdomains = subdomainSplit[2].split('|');
-                }
+		const urls = location.hash.split('#').filter(Boolean);
+		let custom = false;
 
-                if (/\{([^\}]*|.*)\}/.test(rawHash))
-                L.TileLayer.Provider.providers.Custom = {
-					url: rawHash,
-					options: {
-                        subdomains,
-						attribution: 'Please respect the map provider’s copyright',
-						detectRetina: true,
-					},
-				};
-				baseLayers.Custom = L.tileLayer.provider('Custom');
-				baseLayers.Custom.addTo(map);
+		for (const [i, url] of urls.entries()) {
+			let rawHash = decodeURIComponent(url);
+			if (/^https?:\/\//.test(rawHash)) {
+				const subdomainSplit = /^(.*\{)([^\|\}]*?\|[^\}]*?)(\}.*)/.exec(rawHash);
+				var subdomains = ['a', 'b', 'c'];
+				if (subdomainSplit) {
+					rawHash = subdomainSplit[1] + 's' + subdomainSplit[3];
+					subdomains = subdomainSplit[2].split('|');
+				}
+
+				if (/\{([^\}]*|.*)\}/.test(rawHash)) {
+					const name = `Custom${i}`;
+					L.TileLayer.Provider.providers[name] = {
+						url: rawHash,
+						options: {
+							subdomains,
+							attribution: 'Please respect the map provider’s copyright',
+							detectRetina: true,
+						},
+					};
+					baseLayers[name] = L.tileLayer.provider(name);
+					baseLayers[name].addTo(map);
+					custom = true;
+				}
 			}
-			else defaultLayer.addTo(map);
-		} else {
+		} if (!custom) {
 			defaultLayer.addTo(map);
 		}
 
@@ -126,21 +132,21 @@
 			map.setView({ lat, lng }, zoom);
 		}
 
-		if (!baseLayers.Custom) {
+		if (!custom) {
 			L.control.layers(baseLayers, overlayLayers, { collapsed: true }).addTo(map);
 		}
 
-        L.control.locate().addTo(map);
+		L.control.locate().addTo(map);
 
 		var urlUpdateTimeout = 0;
-        map.on('zoomend moveend', function () {
-            clearTimeout(urlUpdateTimeout);
-            urlUpdateTimeout = setTimeout(function () {
-                var { lat, lng } = map.getCenter();
-                var zoom = map.getZoom();
-                var posString = [zoom.toFixed(2), lat.toFixed(4), lng.toFixed(4)].join("/");
-                history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
-            }, 0);
+		map.on('zoomend moveend', function () {
+			clearTimeout(urlUpdateTimeout);
+			urlUpdateTimeout = setTimeout(function () {
+				var { lat, lng } = map.getCenter();
+				var zoom = map.getZoom();
+				var posString = [zoom.toFixed(2), lat.toFixed(4), lng.toFixed(4)].join("/");
+				history.replaceState(null, '', location.pathname + "?" + posString + location.hash);
+			}, 0);
 		});
 
 		window.addEventListener("hashchange", () => location.reload());
